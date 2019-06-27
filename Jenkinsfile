@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        bat(script: 'nuget restore \'Case Study.sln\'', label: 'Restore Packages', returnStatus: true)
+        bat(script: 'nuget restore "Case Study.sln"', label: 'Restore Packages', returnStatus: true)
       }
     }
   }
