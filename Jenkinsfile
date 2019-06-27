@@ -20,6 +20,11 @@ pipeline {
         archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
       }
     }
+    stage('') {
+      steps {
+        sh 'curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip" "http://localhost:8081/artifactory/generic-local"'
+      }
+    }
   }
   environment {
     MSTest = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\MSTest.exe'
