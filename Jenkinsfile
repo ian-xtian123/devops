@@ -1,9 +1,9 @@
 pipeline {
   agent any
   stages {
-    stage('SCM') {
+    stage('test') {
       steps {
-        git(url: 'https://github.com/ian-xtian123/company', branch: 'master')
+        echo 'test'
       }
     }
   }
