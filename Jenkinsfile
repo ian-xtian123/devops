@@ -16,14 +16,14 @@ pipeline {
     }
     stage('Archive') {
       steps {
-        zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Case Study/bin/')
+        zip(archive: true, zipFile: "caseStudy.1.0.0."${env.BUILD_NUMBER}.zip", dir: 'Case Study/bin/')
         archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
       }
     }
     stage('Upload Artifact') {
       steps {
-        echo '${env.BUILD_NUMBER}'
-        sh 'curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip" "http://localhost:8081/artifactory/generic-local"'
+        echo "${env.BUILD_NUMBER}"
+        sh "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T 'caseStudy.1.0.0.${env.BUILD_NUMBER}.zip' 'http://localhost:8081/artifactory/generic-local'"
       }
     }
   }
