@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  environment {
+    MSTest = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\MSTest.exe'
+  }
   stages {
     stage('Build, Test and Code Quality') {
       steps {
@@ -20,7 +23,5 @@ pipeline {
       }
     }
   }
-  environment {
-    MSTest = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\MSTest.exe'
-  }
+ 
 }
