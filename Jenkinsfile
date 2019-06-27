@@ -1,6 +1,11 @@
 pipeline {
   agent any
   stages {
+	stage('Get latest Codes') {
+	   steps {
+		git 'https://github.com/ian-xtian123/devops'
+	   }
+	}
     stage('Build, Test and Code Quality') {
       steps {
         withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'SonarQube') {
@@ -12,6 +17,12 @@ pipeline {
         }
 
         waitForQualityGate(credentialsId: 'SonarQube', abortPipeline: true)
+      }
+    }
+	stage('Archive') {
+      steps {
+        zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Case Study/bin/')
+        archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
       }
     }
     stage('Archive') {
