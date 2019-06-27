@@ -9,8 +9,8 @@ pipeline {
     }
     stage('Archive') {
       steps {
-        zip(archive: true, zipFile: 'caseStudy.1.0.0."${env.BUILD_NUMBER}".zip', dir: 'Case Study/bin/')
-        archiveArtifacts 'caseStudy.1.0.0."${env.BUILD_NUMBER}".zip'
+        zip(archive: true, zipFile: 'caseStudy.1.0.0.\'${env.BUILD_NUMBER}\'.zip', dir: 'Case Study/bin/')
+        archiveArtifacts 'caseStudy.1.0.0.\'${env.BUILD_NUMBER}\'.zip'
       }
     }
   }
