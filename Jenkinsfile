@@ -1,13 +1,10 @@
 pipeline {
   agent any
   stages {
-    stage('test') {
+    stage('Build') {
       steps {
-        echo 'test'
+        bat(script: 'bat \'nuget restore "Case Study.sln"\'', label: 'Restore Packages', returnStatus: true)
       }
     }
-  }
-  environment {
-    dotnet = 'C:\\\\Program Files\\\\dotnet\\\\dotnet.exe'
   }
 }
