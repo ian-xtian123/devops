@@ -11,6 +11,7 @@ pipeline {
           bat "\"${tool 'MSBuildSQ'}\" end /d:sonar.login=\"b0730da2e5486dde54f6acb79e6740adee3615a8\""
         }
 
+        waitForQualityGate(credentialsId: 'SonarQube', abortPipeline: true)
       }
     }
     stage('Archive') {
