@@ -10,6 +10,7 @@ pipeline {
     stage('Archive') {
       steps {
         archiveArtifacts 'Case Study/bin/**'
+        zip(archive: true, zipFile: 'caseStudy.1.0.0.${env.BUILD_NUMBER}.zip', dir: 'Case Study/bin/')
       }
     }
   }
