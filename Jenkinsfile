@@ -1,11 +1,6 @@
 pipeline {
   agent any
   stages {
-	stage('Get latest Codes') {
-	   steps {
-		git 'https://github.com/ian-xtian123/devops'
-	   }
-	}
     stage('Build, Test and Code Quality') {
       steps {
         withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'SonarQube') {
