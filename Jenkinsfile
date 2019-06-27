@@ -23,7 +23,7 @@ pipeline {
     stage('Upload Artifact') {
       steps {
         echo "${env.BUILD_NUMBER}"
-        bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T 'caseStudy.1.0.0.${env.BUILD_NUMBER}.zip' 'http://localhost:8081/artifactory/generic-local'"
+        bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T 'caseStudy.1.0.0.${env.BUILD_NUMBER}.zip' 'http://localhost:8081/artifactory/generic-local/prod/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip'"
       }
     }
   }
