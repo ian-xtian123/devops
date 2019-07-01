@@ -34,6 +34,26 @@ pipeline {
         bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/prod/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
       }
     }
+	stage('Deploy') {
+		steps{
+		  script{
+
+				  def remote = [:]
+				  remote.name = 'ansibleServer'
+				  remote.host = '127.0.0.1'
+				  remote.allowAnyHosts = true
+				  
+				  withCredentials([usernamePassword(credentialsId: '2db92d5a-3f3b-4b2a-b83f-c2f2df009b0f', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+				  
+					  remote.user = "$USERNAME"
+					  remote.password = "$PASSWORD"
+					  sshCommand remote: remote, command: "cd ansible ; ansible-playbook -i inventory master.yml --extra-vars \"version=1.0.0.${env.BUILD_NUMBER}\""
+				  }
+				  
+				  
+			}
+		}
+    }
   }
   environment {
     MSTest = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\MSTest.exe'
