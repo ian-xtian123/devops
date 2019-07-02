@@ -76,7 +76,7 @@
 				  
 					  remote.user = "$USERNAME"
 					  remote.password = "$PASSWORD"
-					  sshCommand remote: remote, command: "cd ansible ; ansible-playbook -i inventory master.yml --extra-vars \"version=1.0.0.${env.BUILD_NUMBER}\" deployEnv=prod\""
+					  sshCommand remote: remote, command: "cd ansible ; ansible-playbook -i inventory master.yml --extra-vars \"version=1.0.0.${env.BUILD_NUMBER} deployEnv=prod\""
 				  }
 	  
 				}
