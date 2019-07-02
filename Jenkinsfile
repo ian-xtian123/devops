@@ -6,11 +6,16 @@ pipeline {
         withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'SonarQube') {
           bat "\"${tool 'MSBuildSQ'}\"  begin /k:\"caseStudy\" /d:sonar.host.url=\"http://localhost:9000\" /d:sonar.login=\"b0730da2e5486dde54f6acb79e6740adee3615a8\" /v:'caseStudy.1.0.0.${env.BUILD_NUMBER}' /d:sonar.cs.vstest.reportsPaths='TestResults\\*.trx'"
           bat(script: 'nuget restore "Case Study.sln" -source "https://api.nuget.org/v3/index.json"', label: 'Restore Packages', returnStatus: true)
+		  bat "\"${tool 'MSBuild'}\" \"Case Study.sln\" /p:Configuration=Release /t:Build /p:OutDir=\"$WORKSPACE\\Release\";Configuration=Release"
+		  script{
+			  stage('Unit test') {
+				  bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\Extensions\\TestPlatform\\vstest.console.exe" /Logger:trx "Release\\CaseStudy.Tests.dll"'
+			  }
+			  stage('Code Quality') {
+				  bat "\"${tool 'MSBuildSQ'}\" end /d:sonar.login=\"b0730da2e5486dde54f6acb79e6740adee3615a8\""
+			  }
+		  }
 		}
-          bat "\"${tool 'MSBuild'}\" \"Case Study.sln\" /p:Configuration=Release /t:Build /p:OutDir=\"$WORKSPACE\\Release\";Configuration=Release"
-          bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\Extensions\\TestPlatform\\vstest.console.exe" /Logger:trx "Release\\CaseStudy.Tests.dll"'
-          bat "\"${tool 'MSBuildSQ'}\" end /d:sonar.login=\"b0730da2e5486dde54f6acb79e6740adee3615a8\""
-        
       }
     }
     stage('Quality Gate'){
