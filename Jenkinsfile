@@ -13,31 +13,30 @@ pipeline {
 			  }
 			  stage('Code Quality') {
 				  bat "\"${tool 'MSBuildSQ'}\" end /d:sonar.login=\"b0730da2e5486dde54f6acb79e6740adee3615a8\""
-				  script{
-					  timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
-
-						if (waitForQualityGate().status != 'OK') {
-						  error "Pipeline aborted due to quality gate failure: ${waitForQualityGate().status}"
-						}
-					  }
-					}
 			  }
 		  }
 		}
       }
     }
-    stage('Archive') {
-      steps {
-        zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Release/_PublishedWebsites/Case Study/')
-        archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
-      }
-    }
+    stage('Quality Gate'){
+      steps{
+          script{
+			  timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
+
+				if (waitForQualityGate().status != 'OK') {
+				  error "Pipeline aborted due to quality gate failure: ${waitForQualityGate().status}"
+				}
+			  }}
+		}
+	}
     stage('Upload Artifact') {
       steps {
+		zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Release/_PublishedWebsites/Case Study/')
+        archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
         bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/prod/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
       }
     }
-	stage('Deploy') {
+	stage('Deploy to Staging') {
 		steps{
 		  script{
 
