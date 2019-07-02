@@ -29,59 +29,72 @@
 		}
 		stage('Upload Artifact') {
 		  steps {
-			zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Release/_PublishedWebsites/Case Study/')
-			archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
-			bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/staging/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
+			script{
+				zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Release/_PublishedWebsites/Case Study/')
+				archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
+				if (env.BRANCH_NAME != 'master') {
+					bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/dev/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
+				}else{
+					bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/staging/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
+					stage('Deploy to Staging') {
+						steps{
+						  script{
+
+							  def remote = [:]
+							  remote.name = 'ansibleServer'
+							  remote.host = '127.0.0.1'
+							  remote.allowAnyHosts = true
+							  
+							  withCredentials([usernamePassword(credentialsId: '2db92d5a-3f3b-4b2a-b83f-c2f2df009b0f', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+							  
+								  remote.user = "$USERNAME"
+								  remote.password = "$PASSWORD"
+								  sshCommand remote: remote, command: "cd ansible ; ansible-playbook -i inventory master.yml --extra-vars \"version=1.0.0.${env.BUILD_NUMBER} deployEnv=staging\""
+							  }
+				  
+							}
+						}
+					}
+					
+					
+					stage('Approval') {
+						steps {
+							input "Deploy Version 1.0.0.${env.BUILD_NUMBER} to Production environment?"
+						}
+					}
+					
+					stage('Deploy to Prod') {
+						steps{
+						  script{
+
+							  def remote = [:]
+							  remote.name = 'ansibleServer'
+							  remote.host = '127.0.0.1'
+							  remote.allowAnyHosts = true
+							  
+							  bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/prod/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
+							  
+							  withCredentials([usernamePassword(credentialsId: '2db92d5a-3f3b-4b2a-b83f-c2f2df009b0f', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+							  
+								  remote.user = "$USERNAME"
+								  remote.password = "$PASSWORD"
+								  sshCommand remote: remote, command: "cd ansible ; ansible-playbook -i inventory master.yml --extra-vars \"version=1.0.0.${env.BUILD_NUMBER} deployEnv=prod\""
+							  }
+				  
+							}
+						}
+					}
+				}
+			}
+				
+			
+			
+		  
+		  
+		  
 		  }
 		}
-		stage('Deploy to Staging') {
-			steps{
-			  script{
-
-				  def remote = [:]
-				  remote.name = 'ansibleServer'
-				  remote.host = '127.0.0.1'
-				  remote.allowAnyHosts = true
-				  
-				  withCredentials([usernamePassword(credentialsId: '2db92d5a-3f3b-4b2a-b83f-c2f2df009b0f', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-				  
-					  remote.user = "$USERNAME"
-					  remote.password = "$PASSWORD"
-					  sshCommand remote: remote, command: "cd ansible ; ansible-playbook -i inventory master.yml --extra-vars \"version=1.0.0.${env.BUILD_NUMBER} deployEnv=staging\""
-				  }
-	  
-				}
-			}
-		}
 		
-		
-		stage('Approval') {
-			steps {
-				input "Deploy Version 1.0.0.${env.BUILD_NUMBER} to Production environment?"
-			}
-		}
-		
-		stage('Deploy to Prod') {
-			steps{
-			  script{
-
-				  def remote = [:]
-				  remote.name = 'ansibleServer'
-				  remote.host = '127.0.0.1'
-				  remote.allowAnyHosts = true
-				  
-				  bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/prod/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
-				  
-				  withCredentials([usernamePassword(credentialsId: '2db92d5a-3f3b-4b2a-b83f-c2f2df009b0f', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-				  
-					  remote.user = "$USERNAME"
-					  remote.password = "$PASSWORD"
-					  sshCommand remote: remote, command: "cd ansible ; ansible-playbook -i inventory master.yml --extra-vars \"version=1.0.0.${env.BUILD_NUMBER} deployEnv=prod\""
-				  }
-	  
-				}
-			}
-		}
 	  }
 	  environment {
 		MSTest = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\MSTest.exe'
