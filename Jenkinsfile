@@ -55,6 +55,13 @@ pipeline {
 			}
 		}
     }
+	
+	
+	stage('Deploy to Prod') {
+		steps {
+			input "Does the staging environment look ok?"
+		}
+	}
   }
   environment {
     MSTest = 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\MSTest.exe'
