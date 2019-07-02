@@ -28,6 +28,7 @@ pipeline {
 			}
 		}
 		stage('Upload Artifact') {
+			script{
 			if (env.BRANCH_NAME != 'master') {
 				steps {
 					zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Release/_PublishedWebsites/Case Study/')
@@ -43,7 +44,7 @@ pipeline {
 				 }
 				
 			}
-		  
+		}
 		}
 		stage('Deploy to Development') {
 			when{
