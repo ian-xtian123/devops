@@ -55,7 +55,7 @@ pipeline {
     }
 	
 	
-	stage('Deploy to Prod') {
+	stage('Approval') {
 		steps {
 			input "Does the staging environment look ok?"
 		}
