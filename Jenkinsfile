@@ -28,23 +28,19 @@ pipeline {
 			}
 		}
 		stage('Upload Artifact') {
+		  steps {
+			zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Release/_PublishedWebsites/Case Study/')
+			archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
 			script{
-			if (env.BRANCH_NAME != 'master') {
-				steps {
-					zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Release/_PublishedWebsites/Case Study/')
-					archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
-					bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/dev/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
-				 }
-				
-			}else{
-				steps {
-					zip(archive: true, zipFile: "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip", dir: 'Release/_PublishedWebsites/Case Study/')
-					archiveArtifacts "caseStudy.1.0.0.${env.BUILD_NUMBER}.zip"
+				if (env.BRANCH_NAME != 'master') {
+				bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/dev/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
+				}else{
 					bat "curl -uadmin:APmUi9KMQQq8KMj7PERGoMaDHPszJ7nTW3mnz -T caseStudy.1.0.0.${env.BUILD_NUMBER}.zip \"http://localhost:8081/artifactory/generic-local/staging/caseStudy.1.0.0.${env.BUILD_NUMBER}.zip\""
-				 }
-				
+				}
 			}
-		}
+			
+
+		  }
 		}
 		stage('Deploy to Development') {
 			when{
